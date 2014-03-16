@@ -1,0 +1,26 @@
+{
+  "manifest_version": 2,
+
+  "name": "Unsubscribe Button",
+  "description": "Unsubcribe from emails with one click.",
+  "version": "1.0",
+  "background": { "scripts": ["background.js"] },
+  "page_action": {
+      "default_icon": {
+          "19": "unsubscribe19.png",
+          "38": "unsubscribe38.png"
+      },
+      "default_title": "Unsubscribe from emails like this"
+  },
+  "permissions" : [
+      "tabs",
+      "http://*/*",
+      "https://*/*"
+   ],
+   "content_scripts": [
+       {
+           "matches": ["https://*/*", "http://*/*"],
+           "js": ["content.js"]
+       }
+   ]
+}
