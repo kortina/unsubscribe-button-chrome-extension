@@ -7,8 +7,8 @@
   "background": { "scripts": ["background.js"] },
   "page_action": {
       "default_icon": {
-          "19": "unsubscribe19.png",
-          "38": "unsubscribe38.png"
+          "19": "images/unsubscribe19.png",
+          "38": "images/unsubscribe38.png"
       },
       "default_title": "Unsubscribe from emails like this"
   },
