@@ -2,7 +2,7 @@
   "manifest_version": 2,
 
   "name": "Unsubscribe Button",
-  "description": "Unsubcribe from emails with one click.",
+  "description": "Unsubscribe from emails with one click.",
   "version": "1.0",
   "background": { "scripts": ["background.js"] },
   "icons": {
