@@ -44,5 +44,42 @@ function openBestUnsubLink(unsubLinks) {
         win.focus();
     } else {
         console.log("unsubscribe-button:unsub link NOT found");
+        displayModalForTime("Couldn't find unsubscribe link.<br /><br />¯\_(ツ)_/¯", 5000);
     }
+}
+
+function removeModalElement() {
+    var modal = document.getElementById('unsubscribe-button-chrome');
+    if (modal) {
+        document.body.removeChild(modal);
+    }
+}
+function createModalElement(modalText) {
+    var modal = document.createElement("div");
+    modal.setAttribute("id", "unsubscribe-button-chrome");
+    modal.style['z-index'] = '99999999';
+    modal.style.top = '50px';
+    modal.style.position = 'absolute';
+    modal.style.left = '50%';
+
+    var modalInner = document.createElement("div");
+    modalInner.setAttribute("id", "unsubscribe-button-chrome-modal-inner");
+    modalInner.style.position = 'relative';
+    modalInner.style.left = '-50%';
+    modalInner.style.padding = '15px';
+    modalInner.style['background-color'] = 'rgba(0,0,0,0.7)';
+    modalInner.style['text-align'] = 'center';
+    modalInner.style['font-size'] = '16px';
+    modalInner.style.color = '#fff';
+    modalInner.innerHTML = modalText;
+
+    modal.appendChild(modalInner);
+    return modal;
+
+}
+
+function displayModalForTime(modalText, millisecondsToDisplay) {
+    var modal = createModalElement(modalText);
+    document.body.appendChild(modal);
+    setTimeout(function() { removeModalElement(); }, millisecondsToDisplay);
 }
