@@ -3,7 +3,7 @@
 
   "name": "Unsubscribe Button",
   "description": "Unsubscribe from emails with one click.",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "background": { "scripts": ["background.js"] },
   "icons": {
       "16": "images/unsubscribe16.png",
@@ -19,8 +19,8 @@
   },
   "permissions" : [
       "tabs",
-      "http://*/*",
-      "https://*/*"
+      "http://mail.google.com/*",
+      "https://mail.google.com/*"
    ],
    "content_scripts": [
        {
