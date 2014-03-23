@@ -3,9 +3,13 @@
 // background.js:chrome.pageAction.onClicked calls this function
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
     //console.log("unsubscribe-button:content.js:onRequest");
+    tryToUnsubscribe();
+});
+
+function tryToUnsubscribe() {
     var links = getUnsubLinks();
     openBestUnsubLink(links);
-});
+}
 
 function getUnsubLinks() {
     var unsubLinks = getLinksMatching(/unsub|optout|opt out/i);
@@ -83,3 +87,29 @@ function displayModalForTime(modalText, millisecondsToDisplay) {
     document.body.appendChild(modal);
     setTimeout(function() { removeModalElement(); }, millisecondsToDisplay);
 }
+
+function shouldNotRespondToKeyboardShortcut(element) {
+    if (!element) return false;
+    if (element.nodeName == "INPUT" || element.nodeName == "TEXTAREA") return true;
+    // check class of special elements, like message body
+    var cls = element.getAttribute('class');
+    if (cls && cls.indexOf && cls.indexOf('editable') != -1) return true; // message body field
+    return false;
+}
+
+// Use "$" as a keyboard shortcut you can use instead of clicking button in
+// address bar
+function unsubscribeKeyboardShortcutListener(e) {
+    if (shouldNotRespondToKeyboardShortcut(document.activeElement)) return;
+    if (e.shiftKey && e.keyCode ==  52) { // shift + 4 = $
+        tryToUnsubscribe();
+    }
+}
+
+function registerUnsubscribeKeyboardShortcutListener(reregister) {
+    if (!reregister && unsubscribeKeyboardShortcutListener.isSet === true) return;
+    document.addEventListener('keyup', unsubscribeKeyboardShortcutListener, false);
+    unsubscribeKeyboardShortcutListener.isSet = true;
+}
+
+registerUnsubscribeKeyboardShortcutListener(false);
