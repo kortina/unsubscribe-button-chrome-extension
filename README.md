@@ -1,3 +1,7 @@
+Add the extension from the Chrome web store here:
+
+https://chrome.google.com/webstore/detail/unsubscribe-button/hopdblcmcfipdidllgkjflmaopndofmp?hl=en
+
 NEW! Now you can use the keyboard shortcut "$" instead of clicking the Unsubscribe Button in your address bar.  Boom!
 
 * Is your inbox overloaded with marketing e-newsletters?
