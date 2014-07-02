@@ -11,3 +11,7 @@ NEW! Now you can use the keyboard shortcut "$" instead of clicking the Unsubscri
 "Unsubscribe Button" (TM) for Chrome adds an easy to use, ONE TAP unsubscribe button to your address bar whenever you browse your Gmail messages.
 
 Try it today, for FREE, and save yourself uncountable hours of vexation.
+
+Submit bugs and feature requests at:
+
+https://github.com/kortina/unsubscribe-button-chrome-extension/issues
