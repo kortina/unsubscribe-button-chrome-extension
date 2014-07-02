@@ -106,7 +106,12 @@ function unsubscribeKeyboardShortcutListener(e) {
     }
 }
 
+function urlIsGmail(url) {
+    return url.match(/mail\.google\.com/i);
+}
+
 function registerUnsubscribeKeyboardShortcutListener(reregister) {
+    if (!urlIsGmail(document.URL)) return;
     if (!reregister && unsubscribeKeyboardShortcutListener.isSet === true) return;
     document.addEventListener('keyup', unsubscribeKeyboardShortcutListener, false);
     unsubscribeKeyboardShortcutListener.isSet = true;
