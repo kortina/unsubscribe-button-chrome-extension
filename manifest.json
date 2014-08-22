@@ -3,7 +3,7 @@
 
   "name": "Unsubscribe Button",
   "description": "Unsubscribe from emails with one click.",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "background": { "scripts": ["background.js"] },
   "icons": {
       "16": "images/unsubscribe16.png",

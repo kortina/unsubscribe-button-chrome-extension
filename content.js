@@ -7,8 +7,14 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 });
 
 function tryToUnsubscribe() {
-    var links = getUnsubLinks();
-    openBestUnsubLink(links);
+    var topButton = getGmailUnsubscribeTopButton();
+    if (topButton) {
+        console.log("unsubscribe-button:topButton found");
+        clickGmailUnsubscribeButtons(topButton);
+    } else {
+        console.log("unsubscribe-button:topButton NOT found");
+        openBestUnsubLinkInEmailBody();
+    }
 }
 
 function getUnsubLinks() {
@@ -19,16 +25,83 @@ function getUnsubLinks() {
     return unsubLinks;
 }
 
-function getLinksMatching(pattern) {
-    var links = document.getElementsByTagName("a");
-    var matchedLinks = [];
-    for (var i in links) {
-        console.log(links[i].innerText);
-        if (links[i].innerText && links[i].innerText.match(pattern)) {
-            matchedLinks.push(links[i]);
+function getGmailUnsubscribeTopButton() {
+/*
+ * Unsub Gmail top:
+   <h3 class="iw">
+       <span email="Expedia@expediamail.com" name="Expedia.com" class="gD"> Expedia.com</span>
+       <span class="go">
+           <span aria-hidden="true"> &lt;</span> Expedia@expediamail.com<span aria-hidden="true"> &gt;</span>
+       </span>
+       <span class="Ca" idlink="" tabindex="0">Unsubscribe</span>
+   </h3>
+   */
+    var nodes = getNodesMatching("span", /^Unsubscribe$/);
+    if (nodes) {
+        return nodes[0];
+    } else {
+        return null;
+    }
+}
+
+function getGmailUnsubscribeDialogButton() {
+    /*
+     * unsub button:
+     <div class="Kj-JD-Jl">
+         <button name="s" class="J-at1-auR J-at1-atl">Unsubscribe</button>
+         <button name="cancel">Cancel</button>
+     </div>
+     */
+    var nodes = getNodesMatching("button", /^Unsubscribe$/);
+    if (nodes) {
+        return nodes[0];
+    } else {
+        return null;
+    }
+}
+
+function getNodesMatching(tagName, innerTextPattern, className) {
+    /*
+     * tagName: "a", "span", "div", etc
+     * innerTextPattern: regexp to match innerText of node
+     * className: optional, if supplied nodes that match innerTextPattern must also be of className
+     */
+    className = className || false;
+    console.log("unsubscribe-button:className:");
+    console.log(className);
+    var nodes = document.getElementsByTagName(tagName);
+    var matchedNodes = [];
+    for (var i in nodes) {
+        if (nodes[i].innerText && nodes[i].innerText.match(innerTextPattern)) {
+            console.log("unsubscribe-button:pattern matched node: " + tagName + " : " + innerTextPattern.toString() + " : " + nodes[i].innerText);
+            if (!className || hasClass(nodes[i], className)) {
+                console.log("unsubscribe-button:className matched");
+                matchedNodes.push(nodes[i]);
+            } else {
+                console.log("unsubscribe-button:className failed match");
+            }
+
         }
     }
-    return matchedLinks;
+    return matchedNodes;
+}
+
+function hasClass(element, className) {
+    return (' ' + element.className + ' ').indexOf(' ' + className + ' ') > -1;
+}
+
+function causeEventToFire(element, eventType){
+    if (element.fireEvent) {
+        element.fireEvent('on' + eventType);
+    } else {
+        var evObj = document.createEvent('Events');
+        evObj.initEvent(eventType, true, false);
+        element.dispatchEvent(evObj);
+    }
+}
+
+function getLinksMatching(pattern) {
+    return getNodesMatching("a", pattern);
 }
 
 function chooseBestUnsubLink(unsubLinks) {
@@ -40,7 +113,8 @@ function chooseBestUnsubLink(unsubLinks) {
     return null;
 }
 
-function openBestUnsubLink(unsubLinks) {
+function openBestUnsubLinkInEmailBody() {
+    var unsubLinks = getUnsubLinks();
     var link = chooseBestUnsubLink(unsubLinks);
     if (link) {
         console.log("unsubscribe-button:unsub link found: " + link.href.toString());
@@ -49,6 +123,25 @@ function openBestUnsubLink(unsubLinks) {
     } else {
         console.log("unsubscribe-button:unsub link NOT found");
         displayModalForTime("Couldn't find unsubscribe link.<br /><br />¯\_(ツ)_/¯", 5000);
+    }
+}
+
+function clickGmailUnsubscribeButtons(topButton) {
+    console.log("unsubscribe-button:clickGmailUnsubscribeButtons");
+    causeEventToFire(topButton, "click");
+    setTimeout(clickGmailDialogButton, 500);
+}
+
+function clickGmailDialogButton() {
+    console.log("unsubscribe-button:clickGmailDialogButton");
+    var dialogButton = getGmailUnsubscribeDialogButton();
+    if (dialogButton) {
+        console.log("unsubscribe-button:dialogButton found");
+        causeEventToFire(dialogButton, "click");
+        displayModalForTime("Unsubscribed!", 2000);
+    } else {
+        console.log("unsubscribe-button:dialogButton NOT found");
+        openBestUnsubLinkInEmailBody();
     }
 }
 
