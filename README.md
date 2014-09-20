@@ -13,3 +13,7 @@ New in v 1.0.6: if Gmail provides an unsubscribe button at top of email, this ex
 Submit bugs and feature requests at:
 
 https://github.com/kortina/unsubscribe-button-chrome-extension/issues
+
+Download here:
+
+https://chrome.google.com/webstore/detail/unsubscribe-button/hopdblcmcfipdidllgkjflmaopndofmp?hl=en
