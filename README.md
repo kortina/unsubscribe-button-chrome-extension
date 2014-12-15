@@ -8,6 +8,8 @@ NEW! Now you can use the keyboard shortcut "$" instead of clicking the Unsubscri
 
 Try it today, for FREE, and save yourself uncountable hours of vexation.
 
+New in v 1.0.7: track how many newsletters you have unsubscribed from! Share with friends on Facebook!
+
 New in v 1.0.6: if Gmail provides an unsubscribe button at top of email, this extension will first try to use that, preventing you from having to visit a 3rd party website to complete the unsubscribe.
 
 Submit bugs and feature requests at:

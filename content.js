@@ -5,17 +5,22 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
     //console.log("unsubscribe-button:content.js:onRequest");
     tryToUnsubscribe();
 });
+function UnsubscribeButton() {
+}
+UnsubscribeButton.timeoutRef = null;
 
 function tryToUnsubscribe() {
     var topButton = getGmailUnsubscribeTopButton();
     if (topButton) {
         console.log("unsubscribe-button:topButton found");
         clickGmailUnsubscribeButtons(topButton);
+        unsubSuccess();
     } else {
         console.log("unsubscribe-button:topButton NOT found");
         openBestUnsubLinkInEmailBody();
     }
 }
+
 
 function getUnsubLinks() {
     var unsubLinks = getLinksMatching(/unsub|optout|opt out|opt-out/i);
@@ -117,12 +122,13 @@ function openBestUnsubLinkInEmailBody() {
     var unsubLinks = getUnsubLinks();
     var link = chooseBestUnsubLink(unsubLinks);
     if (link) {
+        unsubSuccess();
         console.log("unsubscribe-button:unsub link found: " + link.href.toString());
         var win = window.open(link.href, '_blank');
         win.focus();
     } else {
         console.log("unsubscribe-button:unsub link NOT found");
-        displayModalForTime("Couldn't find unsubscribe link.<br /><br />¯\_(ツ)_/¯", 5000);
+        displayModalForTime("Couldn't find unsubscribe link.<br />Use the \"!\" shortcut to report spam.<br /><br />¯\\_(ツ)_/¯", 5000);
     }
 }
 
@@ -208,6 +214,79 @@ function registerUnsubscribeKeyboardShortcutListener(reregister) {
     if (!reregister && unsubscribeKeyboardShortcutListener.isSet === true) return;
     document.addEventListener('keyup', unsubscribeKeyboardShortcutListener, false);
     unsubscribeKeyboardShortcutListener.isSet = true;
+}
+
+function getUnsubCount(callback) {
+    chrome.storage.sync.get({"UNSUBSCRIBE_BUTTON_COUNT": 0}, function (obj) {
+        console.log('unsubscribe-button:sync.get', obj);
+        callback(obj["UNSUBSCRIBE_BUTTON_COUNT"]);
+    });
+}
+
+function incrementUnsubCount() {
+    getUnsubCount(function(unsubCount) {
+        console.log("unsubscribe-button:UNSUBSCRIBE_BUTTON_COUNT", unsubCount);
+        var data = {"UNSUBSCRIBE_BUTTON_COUNT": unsubCount + 1};
+        chrome.storage.sync.set(data, function() {console.log('unsubscribe-button:sync.set', data);});
+    });
+}
+
+function unsubSuccess() {
+    incrementUnsubCount();
+    addUnsubShareNode();
+}
+
+// Find the Google+ node near top right of page.
+// We'll append an Unsub Count to the left of this.
+function getPlusNameNode() {
+    var plusLinks = getLinksMatching(/^\+/);
+    console.log("unsubscribe-button:plusLinks", plusLinks);
+    for (var i = 0; i < plusLinks.length; i++) {
+        var l = plusLinks[i];
+        if (l.href.match(/plus\.google\.com/)) {
+            console.log("unsubscribe-button:Plus Node", l);
+            return l;
+        }
+    }
+    return null;
+}
+
+function removeUnsubShareNode() {
+    var n = document.getElementById("unsubShareNode");
+    if (n) {
+        n.parentNode.removeChild(n);
+    }
+}
+
+function addUnsubShareNode() {
+    getUnsubCount(function(unsubCount) {
+        var unsubShareNode = document.createElement("div");
+        unsubShareNode.id = "unsubShareNode";
+        unsubShareNode.innerHTML = unsubShareNodeHtml(unsubCount);
+        var plusNode = getPlusNameNode();
+        plusNode.parentNode.parentNode.parentNode.insertBefore(unsubShareNode, plusNode.parentNode.parentNode);
+        if (UnsubscribeButton.timeoutRef) {
+            clearTimeout(UnsubscribeButton.timeoutRef);
+        }
+        var removeUnsubShareNodeAfterSeconds = 60;
+        removeUnsubShareNodeAfterSeconds *= 1000;
+        UnsubscribeButton.timeoutRef = setTimeout(removeUnsubShareNode, removeUnsubShareNodeAfterSeconds);
+    });
+}
+
+function unsubShareNodeHtml(unsubCount) {
+    var fburl = "https://www.facebook.com/dialog/feed";
+    fburl += "?app_id=" + encodeURIComponent("301361186739498");
+    fburl += "&display=" + encodeURIComponent("page");
+    fburl += "&name=" + encodeURIComponent("Unsubscribed from " + unsubCount + " email newsletters");
+    fburl += "&caption=" + encodeURIComponent("Using Unsubscribe Button for Chrome");
+    fburl += "&link=" + encodeURIComponent("https://chrome.google.com/webstore/detail/unsubscribe-button/hopdblcmcfipdidllgkjflmaopndofmp?hl=en");
+    fburl += "&redirect_uri=" + encodeURIComponent("http://kortina.net/work/thanks-for-sharing");
+
+    var html = "<span>" + unsubCount + " Unsubs!</span>";
+    html += " <a href=\"" + fburl + "\" target=\"_blank\">Share</a>";
+    html += "&nbsp;&nbsp;";
+    return html;
 }
 
 registerUnsubscribeKeyboardShortcutListener(false);
