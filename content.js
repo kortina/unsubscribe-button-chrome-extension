@@ -25,7 +25,7 @@ function tryToUnsubscribe() {
 function getUnsubLinks() {
     var unsubLinks = getLinksMatching(/unsub|optout|opt out|opt-out/i);
     if (unsubLinks.length === 0) {
-        unsubLinks = getLinksMatching(/click here/i); // less likely to work than above, but nice fallback
+        unsubLinks = getLinksMatching(/click here|clickhere/i); // less likely to work than above, but nice fallback
     }
     return unsubLinks;
 }
