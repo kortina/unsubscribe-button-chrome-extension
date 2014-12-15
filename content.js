@@ -264,6 +264,7 @@ function addUnsubShareNode() {
         unsubShareNode.id = "unsubShareNode";
         unsubShareNode.innerHTML = unsubShareNodeHtml(unsubCount);
         var plusNode = getPlusNameNode();
+        removeUnsubShareNode();
         plusNode.parentNode.parentNode.parentNode.insertBefore(unsubShareNode, plusNode.parentNode.parentNode);
         if (UnsubscribeButton.timeoutRef) {
             clearTimeout(UnsubscribeButton.timeoutRef);
